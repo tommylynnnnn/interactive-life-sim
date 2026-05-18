@@ -3,7 +3,11 @@
 // ======================
 
 const player = {
-  name: "Alex",
+  name: "",
+  gender: "",
+  emoji: "🧑",
+
+  alive: true,
 
   age: 0,
   money: 0,
@@ -25,19 +29,7 @@ const player = {
     salary: 0
   },
 
-  relationships: [
-    {
-      name: "Mom",
-      type: "Family",
-      friendship: 80
-    },
-
-    {
-      name: "Dad",
-      type: "Family",
-      friendship: 75
-    }
-  ]
+  relationships: []
 };
 
 // ======================
@@ -45,6 +37,21 @@ const player = {
 // ======================
 
 let currentEvents = [];
+
+// ======================
+// RANDOM NAMES
+// ======================
+
+const randomNames = [
+  "Emma",
+  "Liam",
+  "Olivia",
+  "Noah",
+  "Sophia",
+  "Lucas",
+  "Mia",
+  "Ethan"
+];
 
 // ======================
 // SCHOOLS
@@ -71,20 +78,23 @@ const schools = [
 const jobs = [
   {
     title: "Cashier",
+    minAge: 16,
     minSmarts: 20,
-    salary: 20000
+    salary: 18000
   },
 
   {
     title: "Teacher",
-    minSmarts: 50,
-    salary: 50000
+    minAge: 22,
+    minSmarts: 60,
+    salary: 55000
   },
 
   {
     title: "Doctor",
-    minSmarts: 80,
-    salary: 120000
+    minAge: 26,
+    minSmarts: 85,
+    salary: 140000
   }
 ];
 
@@ -94,21 +104,10 @@ const jobs = [
 
 const events = [
   {
-    title: "First Day of School",
-    text: "You started school.",
-    minAge: 5,
-    maxAge: 5,
-
-    effect: () => {
-      player.stats.smarts += 5;
-      player.stats.happiness -= 2;
-    }
-  },
-
-  {
     title: "Birthday Money",
     text: "A relative gave you $100.",
-    minAge: 6,
+
+    minAge: 5,
     maxAge: 18,
 
     effect: () => {
@@ -119,62 +118,107 @@ const events = [
   {
     title: "Caught a Cold",
     text: "You got sick this year.",
+
     minAge: 0,
     maxAge: 100,
 
     effect: () => {
-      player.stats.health -= 10;
-      player.stats.happiness -= 5;
+      player.stats.health -= 8;
+      player.stats.happiness -= 4;
     }
   },
 
   {
-    title: "Made a New Friend",
-    text: "You became friends with someone new.",
+    title: "Made a Friend",
+    text: "You made a new friend.",
+
     minAge: 5,
-    maxAge: 25,
+    maxAge: 30,
 
     effect: () => {
+
       player.relationships.push({
         name: generateRandomName(),
         type: "Friend",
         friendship: 50
       });
 
-      player.stats.happiness += 10;
+      player.stats.happiness += 8;
     }
   }
 ];
 
 // ======================
-// RANDOM NAMES
+// START GAME
 // ======================
 
-const randomNames = [
-  "Emma",
-  "Liam",
-  "Olivia",
-  "Noah",
-  "Sophia",
-  "Mason",
-  "Ava",
-  "Lucas",
-  "Mia",
-  "Ethan"
-];
+function startGame() {
+
+  const nameInput =
+    document.getElementById("name-input").value;
+
+  const genderInput =
+    document.getElementById("gender-input").value;
+
+  if (nameInput.trim() === "") {
+    return;
+  }
+
+  player.name = nameInput;
+  player.gender = genderInput;
+
+  // GENDER EMOJIS
+
+  if (genderInput === "Male") {
+    player.emoji = "👨";
+  }
+
+  else if (genderInput === "Female") {
+    player.emoji = "👩";
+  }
+
+  else {
+    player.emoji = "🧑";
+  }
+
+  // START RELATIONSHIPS
+
+  player.relationships.push({
+    name: "Mom",
+    type: "Family",
+    friendship: 85
+  });
+
+  player.relationships.push({
+    name: "Dad",
+    type: "Family",
+    friendship: 80
+  });
+
+  document.getElementById(
+    "start-screen"
+  ).style.display = "none";
+
+  updateUI();
+}
 
 // ======================
 // UTILITY FUNCTIONS
 // ======================
 
 function generateRandomName() {
+
   return randomNames[
-    Math.floor(Math.random() * randomNames.length)
+    Math.floor(
+      Math.random() * randomNames.length
+    )
   ];
 }
 
 function clampStats() {
+
   for (let stat in player.stats) {
+
     if (player.stats[stat] < 0) {
       player.stats[stat] = 0;
     }
@@ -190,15 +234,20 @@ function clampStats() {
 // ======================
 
 function updateSchoolStatus() {
+
   const school = schools.find(s =>
     player.age >= s.startAge &&
     player.age <= s.endAge
   );
 
   if (school) {
+
     player.education.enrolled = true;
     player.education.school = school.name;
-  } else {
+  }
+
+  else {
+
     player.education.enrolled = false;
     player.education.school = "None";
   }
@@ -209,58 +258,112 @@ function updateSchoolStatus() {
 // ======================
 
 function applyForJob(index) {
+
+  if (!player.alive) return;
+
   const job = jobs[index];
 
-  if (player.stats.smarts >= job.minSmarts) {
-    player.job.title = job.title;
-    player.job.salary = job.salary;
+  // AGE CHECK
 
-    alert(`You became a ${job.title}!`);
-  } else {
-    alert("You are not qualified for this job.");
+  if (player.age < job.minAge) {
+
+    showPopup(
+      "Too Young",
+      `You must be at least age ${job.minAge} to become a ${job.title}.`
+    );
+
+    return;
   }
+
+  // SMARTS CHECK
+
+  if (player.stats.smarts < job.minSmarts) {
+
+    showPopup(
+      "Rejected",
+      "You were not qualified for the job."
+    );
+
+    return;
+  }
+
+  player.job.title = job.title;
+  player.job.salary = job.salary;
+
+  showPopup(
+    "New Job",
+    `You became a ${job.title}!`
+  );
 
   updateUI();
 }
 
 function yearlyJobIncome() {
+
   player.money += player.job.salary;
 }
 
 // ======================
-// RELATIONSHIP SYSTEM
+// RELATIONSHIPS
 // ======================
 
 function complimentPerson(index) {
-  player.relationships[index].friendship += 5;
 
-  if (player.relationships[index].friendship > 100) {
-    player.relationships[index].friendship = 100;
-  }
+  player.relationships[index]
+    .friendship += 5;
 
-  alert(`You complimented ${player.relationships[index].name}!`);
+  clampRelationship(index);
+
+  showPopup(
+    "Compliment",
+    `You complimented ${player.relationships[index].name}.`
+  );
 
   updateUI();
 }
 
 function insultPerson(index) {
-  player.relationships[index].friendship -= 10;
 
-  if (player.relationships[index].friendship < 0) {
-    player.relationships[index].friendship = 0;
-  }
+  player.relationships[index]
+    .friendship -= 10;
 
-  alert(`You insulted ${player.relationships[index].name}!`);
+  clampRelationship(index);
+
+  showPopup(
+    "Insult",
+    `You insulted ${player.relationships[index].name}.`
+  );
 
   updateUI();
 }
 
+function clampRelationship(index) {
+
+  if (
+    player.relationships[index]
+      .friendship > 100
+  ) {
+    player.relationships[index]
+      .friendship = 100;
+  }
+
+  if (
+    player.relationships[index]
+      .friendship < 0
+  ) {
+    player.relationships[index]
+      .friendship = 0;
+  }
+}
+
 // ======================
-// EVENT SYSTEM
+// EVENTS
 // ======================
 
 function getYearEvents() {
+
   const validEvents = events.filter(event =>
+
     player.age >= event.minAge &&
     player.age <= event.maxAge
   );
@@ -268,6 +371,7 @@ function getYearEvents() {
   const chosenEvents = [];
 
   validEvents.forEach(event => {
+
     if (Math.random() < 0.35) {
       chosenEvents.push(event);
     }
@@ -277,34 +381,132 @@ function getYearEvents() {
 }
 
 function showNextEvent() {
+
   if (currentEvents.length === 0) {
+
     updateUI();
     return;
   }
 
-  const event = currentEvents.shift();
+  const event =
+    currentEvents.shift();
 
   event.effect();
 
   clampStats();
 
-  alert(`${event.title}\n\n${event.text}`);
-
-  showNextEvent();
+  showPopup(
+    event.title,
+    event.text,
+    showNextEvent
+  );
 }
 
 // ======================
-// AGE UP SYSTEM
+// RANDOM STAT CHANGES
+// ======================
+
+function yearlyStatChanges() {
+
+  player.stats.happiness +=
+    randomNumber(-4, 4);
+
+  player.stats.health +=
+    randomNumber(-3, 2);
+
+  player.stats.smarts +=
+    randomNumber(0, 2);
+
+  player.stats.looks +=
+    randomNumber(-1, 1);
+
+  clampStats();
+}
+
+function randomNumber(min, max) {
+
+  return Math.floor(
+    Math.random() *
+    (max - min + 1)
+  ) + min;
+}
+
+// ======================
+// DEATH SYSTEM
+// ======================
+
+function checkDeath() {
+
+  // HEALTH DEATH
+
+  if (player.stats.health <= 0) {
+
+    die(
+      "Your health reached 0."
+    );
+
+    return;
+  }
+
+  // OLD AGE DEATH
+
+  if (player.age >= 70) {
+
+    // increases yearly
+
+    const deathChance =
+      (player.age - 69) * 2;
+
+    const roll =
+      Math.random() * 100;
+
+    if (roll < deathChance) {
+
+      die(
+        "You died of old age."
+      );
+    }
+  }
+}
+
+function die(reason) {
+
+  player.alive = false;
+
+  showPopup(
+    "You Died",
+    reason
+  );
+
+  document.getElementById(
+    "age-button"
+  ).disabled = true;
+}
+
+// ======================
+// AGE UP
 // ======================
 
 function ageUp() {
+
+  if (!player.alive) return;
+
   player.age++;
 
   yearlyJobIncome();
 
+  yearlyStatChanges();
+
   updateSchoolStatus();
 
   currentEvents = getYearEvents();
+
+  checkDeath();
+
+  if (!player.alive) {
+    updateUI();
+    return;
+  }
 
   showNextEvent();
 
@@ -312,53 +514,184 @@ function ageUp() {
 }
 
 // ======================
-// UI SYSTEM
+// POPUP SYSTEM
+// ======================
+
+function showPopup(
+  title,
+  text,
+  callback = null
+) {
+
+  document.getElementById(
+    "popup-title"
+  ).innerText = title;
+
+  document.getElementById(
+    "popup-text"
+  ).innerText = text;
+
+  const overlay =
+    document.getElementById(
+      "popup-overlay"
+    );
+
+  overlay.style.display = "flex";
+
+  const button =
+    document.getElementById(
+      "popup-button"
+    );
+
+  button.onclick = () => {
+
+    overlay.style.display = "none";
+
+    if (callback) {
+      callback();
+    }
+  };
+}
+
+// ======================
+// UI
 // ======================
 
 function updateUI() {
 
   // PLAYER INFO
 
-  document.getElementById("player-info").innerHTML = `
-    <h2>${player.name}</h2>
+  document.getElementById(
+    "player-info"
+  ).innerHTML = `
 
-    <p><strong>Age:</strong> ${player.age}</p>
+    <div class="character-header">
 
-    <p><strong>Money:</strong> $${player.money}</p>
+      <div class="character-emoji">
+        ${player.emoji}
+      </div>
 
-    <p><strong>Job:</strong> ${player.job.title}</p>
+      <div class="character-info">
 
-    <p><strong>School:</strong> ${player.education.school}</p>
+        <h2>${player.name}</h2>
 
-    <h3>Stats</h3>
+        <p>Age: ${player.age}</p>
 
-    <p>Happiness: ${player.stats.happiness}</p>
-    <p>Health: ${player.stats.health}</p>
-    <p>Smarts: ${player.stats.smarts}</p>
-    <p>Looks: ${player.stats.looks}</p>
+        <p>${player.job.title}</p>
+
+        <p>Money: $${player.money}</p>
+
+      </div>
+
+    </div>
+
+    <div class="stat">
+      <div class="stat-name">
+        Happiness
+      </div>
+
+      <div class="stat-bar">
+        <div
+          class="stat-fill"
+          style="
+            width:
+            ${player.stats.happiness}%;
+          "
+        ></div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-name">
+        Health
+      </div>
+
+      <div class="stat-bar">
+        <div
+          class="stat-fill"
+          style="
+            width:
+            ${player.stats.health}%;
+          "
+        ></div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-name">
+        Smarts
+      </div>
+
+      <div class="stat-bar">
+        <div
+          class="stat-fill"
+          style="
+            width:
+            ${player.stats.smarts}%;
+          "
+        ></div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-name">
+        Looks
+      </div>
+
+      <div class="stat-bar">
+        <div
+          class="stat-fill"
+          style="
+            width:
+            ${player.stats.looks}%;
+          "
+        ></div>
+      </div>
+    </div>
   `;
 
   // RELATIONSHIPS
 
-  let relationshipHTML = "<h3>Relationships</h3>";
+  let relationshipHTML =
+    `<div class="panel">
+      <h2>Relationships</h2>
+    `;
 
-  player.relationships.forEach((person, index) => {
+  player.relationships.forEach(
+    (person, index) => {
 
     relationshipHTML += `
-      <div class="relationship">
+
+      <div class="card">
+
+        <h3>
+          ${person.name}
+        </h3>
 
         <p>
-          <strong>${person.name}</strong>
-          (${person.type})
+          ${person.type}
         </p>
 
-        <p>Relationship: ${person.friendship}</p>
+        <p>
+          Relationship:
+          ${person.friendship}
+        </p>
 
-        <button onclick="complimentPerson(${index})">
+        <button
+          class="small-button"
+          onclick="
+            complimentPerson(${index})
+          "
+        >
           Compliment
         </button>
 
-        <button onclick="insultPerson(${index})">
+        <button
+          class="small-button"
+          onclick="
+            insultPerson(${index})
+          "
+        >
           Insult
         </button>
 
@@ -366,27 +699,50 @@ function updateUI() {
     `;
   });
 
-  document.getElementById("relationships").innerHTML =
-    relationshipHTML;
+  relationshipHTML += `</div>`;
+
+  document.getElementById(
+    "relationships"
+  ).innerHTML = relationshipHTML;
 
   // JOBS
 
-  let jobsHTML = "<h3>Jobs</h3>";
+  let jobsHTML =
+    `<div class="panel">
+      <h2>Jobs</h2>
+    `;
 
   jobs.forEach((job, index) => {
 
     jobsHTML += `
-      <div class="job">
+
+      <div class="card">
+
+        <h3>
+          ${job.title}
+        </h3>
 
         <p>
-          <strong>${job.title}</strong>
+          Salary:
+          $${job.salary}
         </p>
 
-        <p>Salary: $${job.salary}</p>
+        <p>
+          Minimum Age:
+          ${job.minAge}
+        </p>
 
-        <p>Required Smarts: ${job.minSmarts}</p>
+        <p>
+          Smarts Needed:
+          ${job.minSmarts}
+        </p>
 
-        <button onclick="applyForJob(${index})">
+        <button
+          class="small-button"
+          onclick="
+            applyForJob(${index})
+          "
+        >
           Apply
         </button>
 
@@ -394,12 +750,9 @@ function updateUI() {
     `;
   });
 
-  document.getElementById("jobs").innerHTML = jobsHTML;
+  jobsHTML += `</div>`;
+
+  document.getElementById(
+    "jobs"
+  ).innerHTML = jobsHTML;
 }
-
-// ======================
-// START GAME
-// ======================
-
-updateSchoolStatus();
-updateUI();
