@@ -1,1 +1,280 @@
+```css id="w6q9e8"
+/* ======================
+   GENERAL
+====================== */
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #f4f4f4;
+  color: #222;
+
+  min-height: 100vh;
+}
+
+/* ======================
+   GAME CONTAINER
+====================== */
+
+.game-container {
+  padding: 20px;
+  padding-bottom: 140px;
+}
+
+/* ======================
+   TITLE
+====================== */
+
+h1 {
+  margin-bottom: 20px;
+
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* ======================
+   PANELS
+====================== */
+
+.panel {
+  background: white;
+
+  border-radius: 22px;
+
+  padding: 18px;
+
+  margin-bottom: 18px;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* ======================
+   PLAYER INFO
+====================== */
+
+#player-info h2 {
+  margin-bottom: 10px;
+}
+
+#player-info p {
+  margin-bottom: 8px;
+}
+
+/* ======================
+   STATS BARS
+====================== */
+
+.stat {
+  margin-top: 12px;
+}
+
+.stat-name {
+  margin-bottom: 5px;
+
+  font-size: 14px;
+}
+
+.stat-bar {
+  width: 100%;
+  height: 14px;
+
+  background: #ddd;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+}
+
+.stat-fill {
+  height: 100%;
+
+  border-radius: 20px;
+
+  background: linear-gradient(
+    to right,
+    #ff7eb3,
+    #ff758c
+  );
+}
+
+/* ======================
+   RELATIONSHIPS
+====================== */
+
+.relationship {
+  background: #fafafa;
+
+  border-radius: 16px;
+
+  padding: 14px;
+
+  margin-top: 12px;
+
+  border: 2px solid #eee;
+}
+
+/* ======================
+   JOBS
+====================== */
+
+.job {
+  background: #fafafa;
+
+  border-radius: 16px;
+
+  padding: 14px;
+
+  margin-top: 12px;
+
+  border: 2px solid #eee;
+}
+
+/* ======================
+   BUTTONS
+====================== */
+
+button {
+  border: none;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.03);
+}
+
+/* ======================
+   NORMAL BUTTONS
+====================== */
+
+.job button,
+.relationship button {
+  background: #ff758c;
+
+  color: white;
+
+  padding: 10px 14px;
+
+  border-radius: 12px;
+
+  margin-top: 10px;
+  margin-right: 6px;
+
+  font-weight: bold;
+}
+
+/* ======================
+   BOTTOM NAVIGATION
+====================== */
+
+.bottom-bar {
+  position: fixed;
+
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: 90px;
+
+  background: white;
+
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  z-index: 100;
+}
+
+/* ======================
+   NAV BUTTONS
+====================== */
+
+.nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  color: #777;
+
+  font-size: 13px;
+
+  gap: 5px;
+}
+
+/* ======================
+   AGE UP BUTTON
+====================== */
+
+#age-button {
+  position: absolute;
+
+  top: -35px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 85px;
+  height: 85px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    to bottom,
+    #ff8ba7,
+    #ff5d7a
+  );
+
+  color: white;
+
+  font-size: 22px;
+  font-weight: bold;
+
+  box-shadow: 0 8px 20px rgba(255, 93, 122, 0.35);
+}
+
+#age-button:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+/* ======================
+   AGE BUTTON TEXT
+====================== */
+
+.age-text {
+  font-size: 12px;
+
+  display: block;
+
+  margin-top: 4px;
+}
+
+/* ======================
+   MOBILE FRIENDLY
+====================== */
+
+@media (max-width: 600px) {
+
+  .game-container {
+    padding: 14px;
+    padding-bottom: 140px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+}
+```
